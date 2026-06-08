@@ -1,0 +1,23 @@
+{
+  "name": "indo-retail-scraper",
+
+  "dockerComposeFile": "../docker-compose.yml",
+
+  "service": "app",
+
+  "workspaceFolder": "/app",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "golang.Go",
+        "ms-azuretools.vscode-docker",
+        "eamodio.gitlens"
+      ]
+    }
+  },
+
+  "postCreateCommand": "go mod download",
+
+  "remoteUser": "root"
+}
