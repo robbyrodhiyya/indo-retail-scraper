@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: .devcontainer/Dockerfile
 
-    container_name: groceries-scraper-dev
+    container_name: indo-retail-scraper-dev
 
     working_dir: /app
 

@@ -8,12 +8,12 @@ RUN go mod download
 COPY . .
 
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=arm64 \
-    go build -o groceries-scraper ./cmd
+    go build -o indo-retail-scraper ./cmd
 
 FROM alpine:latest
 
 WORKDIR /root/
 
-COPY --from=builder /app/groceries-scraper .
+COPY --from=builder /app/indo-retail-scraper .
 
-CMD ["./groceries-scraper"]
+CMD ["./indo-retail-scraper"]
