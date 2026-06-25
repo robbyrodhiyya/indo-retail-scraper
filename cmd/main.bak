@@ -1,0 +1,62 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+
+	"indo-retail-scraper/internal/db"
+	"indo-retail-scraper/internal/repository"
+	"indo-retail-scraper/internal/scraper"
+)
+
+func main() {
+	// get arg
+	if len(os.Args) < 2 {
+		fmt.Println("Usage: ./app <source>")
+		return
+	}
+
+	source := os.Args[1]
+
+	// get scraper
+	s, err := scraper.GetScraper(source)
+	if err != nil {
+		panic(err)
+	}
+
+	// connect mongo
+	mongoConn, err := db.Connect()
+	if err != nil {
+		panic(err)
+	}
+	defer mongoConn.Client.Disconnect(context.Background())
+
+	ctx := context.Background()
+
+	// init repository (dynamic collection)
+	repo := repository.NewProductRepository(mongoConn.DB, source)
+
+	// ensure index
+	err = db.EnsureIndexes(ctx, mongoConn.GetCollection(source))
+	if err != nil {
+		panic(err)
+	}
+
+	// scrape
+	products, err := s.Scrape()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("New jobs found:", len(products))
+
+	// insert batch
+	err = repo.InsertProducts(ctx, products)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Inserted:", len(products))
+	fmt.Println("Done for source:", source)
+}
